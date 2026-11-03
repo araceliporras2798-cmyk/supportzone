@@ -1,5 +1,8 @@
 package com.supportzone.model;
 
+/**
+ * Técnico de soporte que puede ser asignado a una solicitud.
+ */
 public class Tecnico {
 
     private Long id;
@@ -48,4 +51,4 @@ public class Tecnico {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
-} 
+}
