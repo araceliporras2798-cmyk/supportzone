@@ -123,4 +123,3 @@ En esta versión, las solicitudes se almacenan temporalmente en memoria mediante
 ## 11. Integrantes del equipo
 
 Proyecto académico desarrollado en equipo para el curso Desarrollo de los Componentes del Negocio – IDAT.
-
