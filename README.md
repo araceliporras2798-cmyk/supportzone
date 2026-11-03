@@ -1,126 +1,260 @@
-# SupportZone – Sistema de Gestión de Solicitudes de Soporte Técnico
+# SupportZone – API de Solicitudes de Soporte Técnico
 
-## 1. Descripción del proyecto
+API RESTful desarrollada con **Java 21** y **Spring Boot 4** para que una empresa de servicios tecnológicos registre, consulte, actualice y elimine las solicitudes de soporte técnico de sus clientes. Reemplaza el registro en papel y en correos desordenados.
 
-SupportZone es una aplicación REST desarrollada para gestionar solicitudes de soporte técnico de una empresa de servicios tecnológicos.
+Los datos se guardan **en memoria** (colecciones `Map`), sin base de datos. Por eso la información se reinicia cada vez que se detiene la aplicación.
 
-El sistema permite registrar, consultar, actualizar y eliminar solicitudes, facilitando el control de incidencias y la organización de la atención técnica.
+---
 
-## 2. Objetivo
+## 1. Tecnologías
 
-Desarrollar una API REST que permita administrar solicitudes de soporte técnico de manera organizada, aplicando los principios de programación orientada a objetos y una arquitectura por capas.
+| Herramienta | Uso |
+|---|---|
+| Java 21 | Lenguaje |
+| Spring Boot 4.1.2 (Spring Web MVC) | API REST |
+| Spring Validation (Jakarta Bean Validation) | Validación con `@Valid`, `@NotNull`, `@NotBlank`, etc. |
+| springdoc-openapi 3.1.1 | Documentación Swagger UI |
+| JUnit 5 + MockMvc | Pruebas automatizadas |
+| Postman | Pruebas funcionales |
+| Maven Wrapper | Compilación y ejecución |
 
-## 3. Tecnologías utilizadas
+## 2. Instalación y ejecución
 
-- Java 21
-- Spring Boot 4.1.2
-- Maven
-- Spring Web
-- Spring Validation
-- Visual Studio Code
-- Postman
-- Git y GitHub
+### Requisitos
 
-## 4. Estructura del proyecto
+- **JDK 21** instalado (`java -version` debe mostrar 21).
+- Git.
+- Conexión a internet la primera vez (Maven descarga las dependencias).
 
-```text
-src/main/java/com/supportzone/
-├── controller/
-│   └── SolicitudController.java
-├── dto/
-│   └── SolicitudDTO.java
-├── exception/
-│   └── GlobalExceptionHandler.java
-├── model/
-│   ├── Solicitud.java
-│   ├── Cliente.java
-│   └── Tecnico.java
-├── service/
-│   ├── SolicitudService.java
-│   └── SolicitudServiceImpl.java
-└── SupportzoneApplication.java
-```
-
-## 5. Funcionalidades principales
-
-- Registrar nuevas solicitudes de soporte.
-- Listar todas las solicitudes.
-- Consultar una solicitud por su identificador.
-- Actualizar la información de una solicitud.
-- Eliminar solicitudes.
-- Validar los datos ingresados.
-- Gestionar errores mediante un controlador global.
-
-## 6. Endpoints de la API REST
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| GET | /api/solicitudes | Listar solicitudes |
-| GET | /api/solicitudes/{id} | Buscar por ID |
-| POST | /api/solicitudes | Registrar solicitud |
-| PUT | /api/solicitudes/{id} | Actualizar solicitud |
-| DELETE | /api/solicitudes/{id} | Eliminar solicitud |
-
-## 7. Validaciones
-
-El sistema verifica que los campos obligatorios estén completos y que la prioridad y el estado tengan valores permitidos.
-
-**Prioridades:** ALTA, MEDIA y BAJA.
-
-**Estados:** PENDIENTE, EN_PROCESO y RESUELTA.
-
-Los errores de validación se gestionan de manera centralizada.
-
-## 8. Instalación y ejecución
-
-### Requisitos previos
-
-- Tener instalado Java JDK 21.
-- Tener Git instalado.
-- Tener conexión a Internet para descargar las dependencias Maven.
+No hace falta instalar Maven: el proyecto incluye el Maven Wrapper (`mvnw`).
 
 ### Pasos
 
-1. Clonar el repositorio:
-
 ```bash
+# 1. Clonar el repositorio
 git clone https://github.com/araceliporras2798-cmyk/supportzone.git
+cd supportzone
+
+# 2. Ejecutar la aplicación
+# Windows (PowerShell o CMD)
+.\mvnw.cmd spring-boot:run
+# Linux / macOS
+./mvnw spring-boot:run
 ```
 
-2. Ingresar a la carpeta:
+La API queda disponible en `http://localhost:8080`.
+
+| Recurso | URL |
+|---|---|
+| API de solicitudes | http://localhost:8080/api/solicitudes |
+| Swagger UI (documentación interactiva) | http://localhost:8080/swagger-ui.html |
+| Especificación OpenAPI (JSON) | http://localhost:8080/v3/api-docs |
+
+### Ejecutar las pruebas automatizadas
 
 ```bash
-cd supportzone
+.\mvnw.cmd test      # Windows
+./mvnw test          # Linux / macOS
 ```
 
-3. Ejecutar la aplicación en Windows:
+## 3. Estructura del proyecto
 
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-4. La API estará disponible en:
+Arquitectura en capas: **controller → service → model**, con DTOs para la entrada de datos y un manejador global de excepciones.
 
 ```text
-http://localhost:8080/api/solicitudes
+src/main/java/com/supportzone/
+├── SupportzoneApplication.java        Clase principal
+├── config/
+│   └── OpenApiConfig.java             Datos generales de Swagger
+├── controller/                        Capa de presentación (endpoints REST)
+│   ├── SolicitudController.java
+│   ├── ClienteController.java
+│   └── TecnicoController.java
+├── dto/                               Objetos de entrada/salida con validaciones
+│   ├── SolicitudDTO.java
+│   ├── EstadoDTO.java
+│   ├── ClienteDTO.java
+│   ├── TecnicoDTO.java
+│   └── ErrorResponse.java             Formato único de errores
+├── exception/                         Manejo centralizado de errores
+│   ├── GlobalExceptionHandler.java    @RestControllerAdvice
+│   ├── RecursoNoEncontradoException.java
+│   └── ReglaNegocioException.java
+├── model/                             Entidades del dominio
+│   ├── Solicitud.java
+│   ├── Cliente.java
+│   ├── Tecnico.java
+│   ├── Prioridad.java                 enum: ALTA, MEDIA, BAJA
+│   └── EstadoSolicitud.java           enum: PENDIENTE, EN_PROCESO, RESUELTA
+└── service/                           Lógica de negocio (interfaz + implementación)
+    ├── SolicitudService.java / SolicitudServiceImpl.java
+    ├── ClienteService.java   / ClienteServiceImpl.java
+    └── TecnicoService.java   / TecnicoServiceImpl.java
+
+src/test/java/com/supportzone/
+├── service/SolicitudServiceImplTest.java      Pruebas unitarias de la lógica
+└── controller/SolicitudControllerTest.java    Pruebas de endpoints con MockMvc
+
+postman/SupportZone.postman_collection.json    Colección de pruebas funcionales
 ```
 
-## 9. Pruebas
+| Capa | Responsabilidad |
+|---|---|
+| **model** | Clases del dominio con atributos privados, constructores, getters y setters (encapsulamiento). Una `Solicitud` tiene un `Cliente`, puede tener un `Tecnico` asignado, y su prioridad y estado son `enum`. |
+| **dto** | Datos que recibe la API, con anotaciones de validación. Así el modelo no queda expuesto a datos inválidos. |
+| **service** | Interfaces que definen las operaciones e implementaciones que guardan los datos en `ConcurrentHashMap` con IDs autoincrementales (`AtomicLong`), como si fuera una tabla. Aquí se aplican las reglas de negocio. |
+| **controller** | Recibe las peticiones HTTP, valida con `@Valid`, llama al servicio y devuelve el código HTTP correcto. |
+| **exception** | `@RestControllerAdvice` convierte cada excepción en una respuesta JSON con el mismo formato. |
 
-Se realizaron pruebas funcionales utilizando Postman para verificar:
+## 4. Modelo de datos
 
-- Registro de solicitudes.
-- Consulta de solicitudes.
-- Actualización de información.
-- Eliminación de registros.
-- Validación de datos incorrectos.
-- Respuesta cuando una solicitud no existe.
+```text
+Cliente 1 ──── * Solicitud * ──── 0..1 Tecnico
+```
 
-## 10. Almacenamiento de información
+**Solicitud:** `id`, `cliente`, `tecnico`, `descripcion`, `prioridad`, `estado`, `fechaRegistro`, `fechaActualizacion`.
 
-En esta versión, las solicitudes se almacenan temporalmente en memoria mediante una colección Java. Por ello, los registros se reinician cuando se detiene la aplicación.
+Al iniciar, la aplicación carga datos de ejemplo:
+- 2 clientes (ID 1 y 2);
+- 2 técnicos (ID 1 y 2);
+- 2 solicitudes (ID 1 PENDIENTE y ID 2 EN_PROCESO).
 
-## 11. Integrantes del equipo
+## 5. Endpoints
 
-Proyecto académico desarrollado en equipo para el curso Desarrollo de los Componentes del Negocio – IDAT.
+### Solicitudes – `/api/solicitudes`
 
+| Método | Ruta | Descripción | Respuesta OK | Errores |
+|---|---|---|---|---|
+| GET | `/api/solicitudes` | Listar todas | 200 | – |
+| GET | `/api/solicitudes?estado=PENDIENTE&prioridad=ALTA` | Listar con filtros (opcionales) | 200 | 400 |
+| GET | `/api/solicitudes/{id}` | Buscar por ID | 200 | 400, 404 |
+| POST | `/api/solicitudes` | Registrar | 201 + header `Location` | 400, 404, 409 |
+| PUT | `/api/solicitudes/{id}` | Actualizar todos los datos | 200 | 400, 404, 409 |
+| PATCH | `/api/solicitudes/{id}/estado` | Cambiar solo el estado | 200 | 400, 404, 409 |
+| DELETE | `/api/solicitudes/{id}` | Eliminar | 204 | 404 |
+
+### Clientes y técnicos
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/api/clientes` | Listar clientes |
+| GET | `/api/clientes/{id}` | Buscar cliente |
+| POST | `/api/clientes` | Registrar cliente |
+| GET | `/api/clientes/{id}/solicitudes` | Solicitudes de un cliente |
+| GET | `/api/tecnicos` | Listar técnicos |
+| GET | `/api/tecnicos/{id}` | Buscar técnico |
+| POST | `/api/tecnicos` | Registrar técnico |
+
+### Ejemplo: registrar una solicitud
+
+`POST /api/solicitudes`
+
+```json
+{
+  "clienteId": 1,
+  "tecnicoId": 2,
+  "descripcion": "La laptop de gerencia no enciende",
+  "prioridad": "ALTA",
+  "estado": "EN_PROCESO"
+}
+```
+
+`tecnicoId` y `estado` son opcionales. Si no se envía `estado`, la solicitud queda `PENDIENTE`.
+
+Respuesta **201 Created**:
+
+```json
+{
+  "id": 3,
+  "cliente": { "id": 1, "nombre": "Ferretería El Tornillo", "correo": "contacto@eltornillo.pe", "telefono": "987654321" },
+  "tecnico": { "id": 2, "nombre": "María Torres", "especialidad": "Hardware", "correo": "mtorres@supportzone.pe" },
+  "descripcion": "La laptop de gerencia no enciende",
+  "prioridad": "ALTA",
+  "estado": "EN_PROCESO",
+  "fechaRegistro": "2026-11-03T16:20:15.123",
+  "fechaActualizacion": null
+}
+```
+
+### Ejemplo: cambiar el estado
+
+`PATCH /api/solicitudes/3/estado`
+
+```json
+{ "estado": "RESUELTA" }
+```
+
+## 6. Validaciones y reglas de negocio
+
+| Campo | Regla |
+|---|---|
+| `clienteId` | Obligatorio, mayor que 0 y debe existir. |
+| `tecnicoId` | Opcional, mayor que 0 y debe existir. |
+| `descripcion` | Obligatoria, entre 10 y 500 caracteres. |
+| `prioridad` | Obligatoria: `ALTA`, `MEDIA` o `BAJA`. |
+| `estado` | Opcional: `PENDIENTE`, `EN_PROCESO` o `RESUELTA`. |
+| Cliente `correo` | Formato de correo válido y no repetido. |
+| Cliente `telefono` | 9 dígitos. |
+
+**Regla de negocio:** una solicitud `EN_PROCESO` o `RESUELTA` debe tener un técnico asignado. Si no lo tiene, la API responde **409 Conflict**.
+
+## 7. Manejo de errores
+
+Todas las respuestas de error tienen la misma estructura. Ejemplo de **400** por validación:
+
+```json
+{
+  "timestamp": "2026-11-03T16:25:40.512",
+  "status": 400,
+  "error": "Bad Request",
+  "mensaje": "Los datos enviados no son válidos",
+  "path": "/api/solicitudes",
+  "detalles": {
+    "clienteId": "El ID del cliente es obligatorio",
+    "descripcion": "La descripción es obligatoria"
+  }
+}
+```
+
+| Código | Cuándo ocurre |
+|---|---|
+| 400 Bad Request | Campos inválidos, JSON mal escrito, prioridad o estado no permitidos, ID no numérico (`/api/solicitudes/abc`). |
+| 404 Not Found | La solicitud, cliente o técnico no existe, o la ruta no existe. |
+| 405 Method Not Allowed | Método HTTP no soportado en la ruta. |
+| 409 Conflict | Se incumple una regla de negocio (estado sin técnico, correo de cliente repetido). |
+| 415 Unsupported Media Type | El cuerpo no se envió como JSON. |
+| 500 Internal Server Error | Error no previsto. |
+
+## 8. Pruebas
+
+### Pruebas funcionales con Postman
+
+1. Iniciar la aplicación.
+2. En Postman, ir a **Import** y elegir `postman/SupportZone.postman_collection.json`.
+3. Ejecutar la colección completa con **Run collection**, en orden y con la aplicación recién iniciada.
+
+La colección incluye 19 peticiones, cada una con su script de verificación:
+
+| Carpeta | Qué prueba |
+|---|---|
+| 1. Solicitudes (CRUD) | Listar, filtrar, registrar, buscar, actualizar (PUT), cambiar estado (PATCH) y eliminar. |
+| 2. Casos de error | 404 de solicitud inexistente, 400 por validación, 400 por prioridad inválida, 400 por ID no numérico, 404 de cliente inexistente, 409 por regla de negocio y 404 de ruta inexistente. |
+| 3. Clientes y técnicos | Listar y registrar clientes y técnicos, y la ruta `/api/clientes/{id}/solicitudes`. |
+
+### Pruebas automatizadas
+
+`./mvnw test` ejecuta:
+
+- **SolicitudServiceImplTest**: lógica de negocio y almacenamiento en memoria (registro, IDs, filtros, actualización, eliminación y reglas de negocio).
+- **SolicitudControllerTest**: endpoints con MockMvc, códigos HTTP y formato de los errores.
+- **SupportzoneApplicationTests**: comprueba que la aplicación inicia correctamente.
+
+## 9. Integrantes y roles
+
+| Integrante | Rol | Entregable |
+|---|---|---|
+| Rodrigo Enrique Pichilingue Valverde | Backend – Modelos y servicios | Paquetes `model` y `service`: clases `Solicitud`, `Cliente`, `Tecnico`, enums, interfaces de servicio e implementación en memoria. |
+| Aracely Yobana Porras León | Backend – API REST | Paquete `controller`: endpoints CRUD, rutas y códigos HTTP. Gestión del repositorio en GitHub. |
+| Grisel Dayana Merino Garcia | Validaciones y calidad | DTOs con validaciones, `GlobalExceptionHandler`, pruebas en Postman, README, documentación e informe técnico. |
+
+Proyecto académico del curso **Desarrollo de los Componentes del Negocio** – Instituto IDAT.
