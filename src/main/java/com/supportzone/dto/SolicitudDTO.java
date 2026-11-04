@@ -1,35 +1,54 @@
 package com.supportzone.dto;
 
+import com.supportzone.model.EstadoSolicitud;
+import com.supportzone.model.Prioridad;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Datos de entrada para registrar (POST) o actualizar (PUT) una solicitud.
+ */
+@Schema(description = "Datos para registrar o actualizar una solicitud de soporte")
 public class SolicitudDTO {
 
-    @NotBlank(message = "El nombre del cliente es obligatorio")
-    @Size(max = 100, message = "El nombre no debe superar 100 caracteres")
-    private String cliente;
+    @Schema(description = "ID del cliente que reporta el problema", example = "1")
+    @NotNull(message = "El ID del cliente es obligatorio")
+    @Positive(message = "El ID del cliente debe ser mayor que 0")
+    private Long clienteId;
 
+    @Schema(description = "ID del técnico asignado (opcional)", example = "1")
+    @Positive(message = "El ID del técnico debe ser mayor que 0")
+    private Long tecnicoId;
+
+    @Schema(description = "Detalle del problema", example = "La impresora de recepción no imprime")
     @NotBlank(message = "La descripción es obligatoria")
+    @Size(min = 10, max = 500, message = "La descripción debe tener entre 10 y 500 caracteres")
     private String descripcion;
 
+    @Schema(description = "Prioridad de la solicitud", example = "ALTA")
     @NotNull(message = "La prioridad es obligatoria")
-    @Pattern(regexp = "ALTA|MEDIA|BAJA",
-            message = "La prioridad debe ser ALTA, MEDIA o BAJA")
-    private String prioridad;
+    private Prioridad prioridad;
 
-    @NotNull(message = "El estado es obligatorio")
-    @Pattern(regexp = "PENDIENTE|EN_PROCESO|RESUELTA",
-            message = "El estado debe ser PENDIENTE, EN_PROCESO o RESUELTA")
-    private String estado;
+    @Schema(description = "Estado de la solicitud. Si se omite al registrar, queda PENDIENTE", example = "PENDIENTE")
+    private EstadoSolicitud estado;
 
-    public String getCliente() {
-        return cliente;
+    public Long getClienteId() {
+        return clienteId;
     }
 
-    public void setCliente(String cliente) {
-        this.cliente = cliente;
+    public void setClienteId(Long clienteId) {
+        this.clienteId = clienteId;
+    }
+
+    public Long getTecnicoId() {
+        return tecnicoId;
+    }
+
+    public void setTecnicoId(Long tecnicoId) {
+        this.tecnicoId = tecnicoId;
     }
 
     public String getDescripcion() {
@@ -40,19 +59,19 @@ public class SolicitudDTO {
         this.descripcion = descripcion;
     }
 
-    public String getPrioridad() {
+    public Prioridad getPrioridad() {
         return prioridad;
     }
 
-    public void setPrioridad(String prioridad) {
+    public void setPrioridad(Prioridad prioridad) {
         this.prioridad = prioridad;
     }
 
-    public String getEstado() {
+    public EstadoSolicitud getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(EstadoSolicitud estado) {
         this.estado = estado;
     }
-} 
+}

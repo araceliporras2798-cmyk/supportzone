@@ -1,5 +1,8 @@
 package com.supportzone.model;
 
+/**
+ * Cliente de la empresa que registra solicitudes de soporte técnico.
+ */
 public class Cliente {
 
     private Long id;
@@ -48,4 +51,4 @@ public class Cliente {
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
-} 
+}

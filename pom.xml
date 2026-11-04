@@ -11,21 +11,8 @@
 	<groupId>com.supportzone</groupId>
 	<artifactId>supportzone</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+	<name>supportzone</name>
+	<description>API REST para la gestión de solicitudes de soporte técnico</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>
@@ -37,6 +24,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+		<!-- Documentacion Swagger / OpenAPI (version 3.x es la compatible con Spring Boot 4) -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>3.1.1</version>
 		</dependency>
 
 		<dependency>
